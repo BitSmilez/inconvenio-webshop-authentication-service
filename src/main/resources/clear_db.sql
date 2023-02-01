@@ -1,2 +1,0 @@
-DROP DATABASE keycloak_1;
-CREATE DATABASE keycloak_1;
