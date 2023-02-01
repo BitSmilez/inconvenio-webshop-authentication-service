@@ -5,11 +5,12 @@ services:
     container_name: keycloak
     image: jboss/keycloak:15.0.2
     restart: always
-    env_file: ./keycloak.env
+    env_file: src/main/resources/keycloak.env
     depends_on:
       - keycloak_db
     volumes:
-      - ./import-this-realm.json:/tmp/realm.json
+      - ./src/main/resources/import-this-realm.json:/tmp/realm.json
+
     ports:
       - "18080:8080"
 
@@ -18,12 +19,10 @@ services:
     container_name: database
     image: mariadb:10.3.26
     restart: always
-    command: --init-file /tmp/clear_db.sql
     volumes:
       - keycloak_db_vol:/var/lib/mysql
-      - ./clear_db.sql:/tmp/clear_db.sql
     env_file:
-      - ./keycloak.env
+      - src/main/resources/keycloak.env
 
 volumes:
   keycloak_db_vol:
