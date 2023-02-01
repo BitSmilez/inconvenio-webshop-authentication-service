@@ -8,13 +8,11 @@ import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserReques
 import com.bitsmilez.authentificationmicroservice.port.requests.LoginRequest;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.AccessTokenResponse;
-import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.BadRequestException;
 import javax.ws.rs.core.Response;
 
 @RestController
@@ -25,7 +23,6 @@ public class UserController {
 
     private final KeycloakProvider kcProvider;
 
-    private static final Logger LOG = org.slf4j.LoggerFactory.getLogger(UserController.class);
 
 
     public UserController(KeycloakAdminClientService kcAdminClient, KeycloakProvider kcProvider) {
@@ -49,8 +46,7 @@ public class UserController {
         try {
             accessTokenResponse = keycloak.tokenManager().getAccessToken();
             return ResponseEntity.status(HttpStatus.OK).body(accessTokenResponse);
-        } catch (BadRequestException ex) {
-            LOG.warn("invalid account. User probably hasn't verified email.", ex);
+        } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(accessTokenResponse);
         }
 
