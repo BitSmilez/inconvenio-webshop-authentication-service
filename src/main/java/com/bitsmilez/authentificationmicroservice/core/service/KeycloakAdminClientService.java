@@ -40,7 +40,7 @@ public class KeycloakAdminClientService {
         Response response = usersResource.create(kcUser);
 
         if (response.getStatus() == 201) {
-            //If you want to save the user to your other database, do it here, for example:
+            // Used for future wishlist entries 
 //            User localUser = new User();
 //            localUser.setFirstName(kcUser.getFirstName());
 //            localUser.setLastName(kcUser.getLastName());
