@@ -8,6 +8,7 @@ import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserReques
 import com.bitsmilez.authentificationmicroservice.port.requests.LoginRequest;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.AccessTokenResponse;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,13 @@ public class UserController {
         AccessTokenResponse accessTokenResponse = null;
         try {
             accessTokenResponse = keycloak.tokenManager().getAccessToken();
-            return ResponseEntity.status(HttpStatus.OK).body(accessTokenResponse);
+
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Set-Cookie", "keycloak_token=" + accessTokenResponse.getToken() + "; Path=/; HttpOnly;");
+
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(accessTokenResponse);
+
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(accessTokenResponse);
         }
