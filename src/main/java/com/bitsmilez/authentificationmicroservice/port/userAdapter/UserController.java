@@ -38,20 +38,19 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<AccessTokenResponse> login(@NotNull @RequestBody LoginRequest loginRequest) {
-        Keycloak keycloak = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
+        AccessTokenResponse response = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
-        AccessTokenResponse accessTokenResponse = null;
-        try {
-            accessTokenResponse = keycloak.tokenManager().getAccessToken();
+        if(response != null) {
+
 
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Set-Cookie", "keycloak_token=" + accessTokenResponse.getToken() + "; Path=/; HttpOnly;");
+            headers.add("Set-Cookie", "keycloak_token=" + response.getToken() + "; Path=/; HttpOnly;");
 
-            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(accessTokenResponse);
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
 
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(accessTokenResponse);
+        } else   {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
     }

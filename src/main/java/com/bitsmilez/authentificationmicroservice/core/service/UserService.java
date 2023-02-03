@@ -3,6 +3,7 @@ package com.bitsmilez.authentificationmicroservice.core.service;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,9 +55,16 @@ public class UserService {
         return response;
 
     }
-    public Keycloak login(String username, String password){
+    public AccessTokenResponse login(String username, String password){
+        AccessTokenResponse accessTokenResponse = null;
+        Keycloak keycloak = kcProvider.newKeycloakBuilderWithPasswordCredentials(username, password).build();
+        try {
+            return  keycloak.tokenManager().getAccessToken();
+        }
+        catch (Exception e){
+            return null;
 
-        return kcProvider.newKeycloakBuilderWithPasswordCredentials(username, password).build();
+        }
     }
     private static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
@@ -65,6 +73,10 @@ public class UserService {
         passwordCredentials.setValue(password);
         return passwordCredentials;
     }
+
+
+
+
 
 
 }
