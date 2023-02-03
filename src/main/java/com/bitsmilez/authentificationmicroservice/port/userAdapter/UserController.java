@@ -2,8 +2,7 @@ package com.bitsmilez.authentificationmicroservice.port.userAdapter;
 
 
 
-import com.bitsmilez.authentificationmicroservice.config.KeycloakProvider;
-import com.bitsmilez.authentificationmicroservice.core.service.KeycloakAdminClientService;
+import com.bitsmilez.authentificationmicroservice.core.service.UserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
 import com.bitsmilez.authentificationmicroservice.port.requests.LoginRequest;
 import org.keycloak.admin.client.Keycloak;
@@ -20,28 +19,26 @@ import javax.ws.rs.core.Response;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/user")
 public class UserController {
-    private final KeycloakAdminClientService kcAdminClient;
-
-    private final KeycloakProvider kcProvider;
+    private final UserService userService;
 
 
 
-    public UserController(KeycloakAdminClientService kcAdminClient, KeycloakProvider kcProvider) {
-        this.kcProvider = kcProvider;
-        this.kcAdminClient = kcAdminClient;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 	
 
     @PostMapping(value = "/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest user) {
-        Response createdResponse = kcAdminClient.createKeycloakUser(user);
+        Response createdResponse = userService.createKeycloakUser(user);
         return ResponseEntity.status(createdResponse.getStatus()).build();
 
     }
 
     @PostMapping("/login")
     public ResponseEntity<AccessTokenResponse> login(@NotNull @RequestBody LoginRequest loginRequest) {
-        Keycloak keycloak = kcProvider.newKeycloakBuilderWithPasswordCredentials(loginRequest.getUsername(), loginRequest.getPassword()).build();
+        Keycloak keycloak = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
         AccessTokenResponse accessTokenResponse = null;
         try {

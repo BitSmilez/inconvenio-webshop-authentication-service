@@ -1,4 +1,4 @@
-package com.bitsmilez.authentificationmicroservice.config;
+package com.bitsmilez.authentificationmicroservice.core.service;
 
 
 import com.mashape.unirest.http.JsonNode;
@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @Getter
-public class KeycloakProvider {
+ class KeycloakProvider {
 
     @Value("${keycloak.auth-server-url}")
     public String serverURL;
@@ -30,17 +30,14 @@ public class KeycloakProvider {
     }
 
     public Keycloak getInstance() {
-        if (keycloak == null) {
 
-            return KeycloakBuilder.builder()
-                    .realm(realm)
-                    .serverUrl(serverURL)
-                    .clientId(clientID)
-                    .clientSecret(clientSecret)
-                    .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-                    .build();
-        }
-        return keycloak;
+        return KeycloakBuilder.builder()
+                .realm(realm)
+                .serverUrl(serverURL)
+                .clientId(clientID)
+                .clientSecret(clientSecret)
+                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
+                .build();
     }
 
 

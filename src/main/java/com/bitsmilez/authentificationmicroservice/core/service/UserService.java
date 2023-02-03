@@ -1,7 +1,7 @@
 package com.bitsmilez.authentificationmicroservice.core.service;
 
-import com.bitsmilez.authentificationmicroservice.config.KeycloakProvider;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
+import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
@@ -13,14 +13,14 @@ import java.util.Collections;
 
 
 @Service
-public class KeycloakAdminClientService {
+public class UserService {
     @Value("${keycloak.realm}")
     public String realm;
 
     private final KeycloakProvider kcProvider;
 
 
-    public KeycloakAdminClientService(KeycloakProvider keycloakProvider) {
+    public UserService(KeycloakProvider keycloakProvider) {
         this.kcProvider = keycloakProvider;
     }
 
@@ -54,7 +54,10 @@ public class KeycloakAdminClientService {
         return response;
 
     }
+    public Keycloak login(String username, String password){
 
+        return kcProvider.newKeycloakBuilderWithPasswordCredentials(username, password).build();
+    }
     private static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
         passwordCredentials.setTemporary(false);
