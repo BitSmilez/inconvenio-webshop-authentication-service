@@ -4,12 +4,23 @@ package com.bitsmilez.authentificationmicroservice.core.service;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import com.squareup.okhttp.OkHttpClient;
 import lombok.Getter;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.KeycloakBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.IOException;
+import java.util.Base64;
 
 @Configuration
 @Getter
@@ -25,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
     public String clientSecret;
 
     private static final Keycloak keycloak = null;
-
+    private final OkHttpClient client = new OkHttpClient();
     public KeycloakProvider() {
     }
 
@@ -60,6 +71,24 @@ import org.springframework.context.annotation.Configuration;
                 .field("refresh_token", refreshToken)
                 .field("grant_type", "refresh_token")
                 .asJson().getBody();
+    }
+    public  Integer introspectToken(String accessToken) throws IOException {
+        String url = serverURL+"realms/"+realm+"/protocol/openid-connect/token/introspect";
+
+
+        String authorization = "Basic " + Base64.getEncoder().encodeToString((this.clientID + ":" + this.clientSecret).getBytes());
+
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(url);
+        post.addHeader("Authorization", authorization);
+        post.addHeader("Accept", "application/json");
+        post.addHeader("Content-Type", "application/x-www-form-urlencoded");
+        post.setEntity(new StringEntity("token=" + accessToken));
+
+        HttpResponse response = httpClient.execute(post);
+        JSONObject jsonResponse = new JSONObject (EntityUtils.toString(response.getEntity()));
+        Integer statusCode = (Boolean.parseBoolean(String.valueOf(jsonResponse.get("active")))  ? 200  :401) ;
+        return statusCode;
     }
 
 }
