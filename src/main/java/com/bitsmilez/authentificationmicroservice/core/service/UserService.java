@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Collections;
 
 
@@ -45,18 +46,12 @@ public class UserService {
 //            User localUser = new User();
 //            localUser.setFirstName(kcUser.getFirstName());
 //            localUser.setLastName(kcUser.getLastName());
-//            localUser.setEmail(user.getEmail());
-//            localUser.setCreatedDate(Timestamp.from(Instant.now()));
-//            String userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
-//            usersResource.get(userId).sendVerifyEmail();
-//            userRepository.save(localUser);
         }
 
         return response;
 
     }
     public AccessTokenResponse login(String username, String password){
-        AccessTokenResponse accessTokenResponse = null;
         Keycloak keycloak = kcProvider.newKeycloakBuilderWithPasswordCredentials(username, password).build();
         try {
             return  keycloak.tokenManager().getAccessToken();
@@ -66,6 +61,13 @@ public class UserService {
 
         }
     }
+
+
+    public Integer verifyToken(String accessToken) throws IOException {
+        return kcProvider.introspectToken(accessToken);
+    }
+
+
     private static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
         passwordCredentials.setTemporary(false);
@@ -73,6 +75,8 @@ public class UserService {
         passwordCredentials.setValue(password);
         return passwordCredentials;
     }
+
+
 
 
 
