@@ -45,7 +45,7 @@ public class UserController {
 
 
             HttpHeaders headers = new HttpHeaders();
-            headers.add("Set-Cookie", "keycloak_token=" + response.getToken() + "; Path=/; HttpOnly;");
+            headers.add("Set-Cookie", "token=" + response.getToken() + "; Path=/; HttpOnly;");
 
             return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
 
