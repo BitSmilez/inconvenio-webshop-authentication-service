@@ -1,6 +1,12 @@
 package com.bitsmilez.authentificationmicroservice.core.service;
 
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.json.JSONObject;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.AccessTokenResponse;
@@ -65,6 +71,31 @@ public class UserService {
 
     public Integer verifyToken(String accessToken) throws IOException {
         return kcProvider.introspectToken(accessToken);
+    }
+
+    public void addCart(String productID, Integer amount) throws IOException {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("productID", productID);
+        jsonObject.accumulate("quantity",amount.toString());
+        String json = jsonObject.toString();
+        StringEntity se = new StringEntity(json);
+
+
+        String url = "http://localhost:8080/add-to-cart";
+        HttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(url);
+        post.setHeader("Content-Type", "application/json");
+
+
+        post.setEntity(se);
+        HttpResponse response = httpClient.execute(post);
+        System.out.println(response.toString());
+
+
+
+
+
+
     }
 
 
