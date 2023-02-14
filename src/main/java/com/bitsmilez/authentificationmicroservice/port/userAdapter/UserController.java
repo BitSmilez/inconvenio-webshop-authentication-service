@@ -5,6 +5,7 @@ import com.bitsmilez.authentificationmicroservice.core.service.UserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
 import com.bitsmilez.authentificationmicroservice.port.requests.LoginRequest;
 import com.bitsmilez.authentificationmicroservice.port.requests.VerifyToken;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -60,6 +61,29 @@ public class UserController {
         int statusCode = userService.verifyToken(accessToken.getAccessToken());
 
           return ResponseEntity.status(statusCode).body(null);
+    }
+
+    @PostMapping("/add-to-cart")
+    public void publishAddToCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
+        String accessToken=  objectNode.get("access_token").asText();
+        int statusCode = userService.verifyToken(accessToken);
+        System.out.println(statusCode);
+        String productID = objectNode.get("productID").asText();
+        int quantity = objectNode.get("quantity").asInt();
+        userService.addCart(productID,quantity);
+
+
+    }
+
+    @PostMapping("/remove-from-cart")
+    public ResponseEntity<?> publishRemoveFromCartEvent(@RequestBody ObjectNode objectNode) {
+        return null;
+    }
+
+    @PostMapping("/update-cart")
+    public ResponseEntity<?> publishUpdateCartEvent(@RequestBody ObjectNode objectNode) {
+        return null;
+
     }
 
 }
