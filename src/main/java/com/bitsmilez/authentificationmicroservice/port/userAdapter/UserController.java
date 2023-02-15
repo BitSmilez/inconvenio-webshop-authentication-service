@@ -57,21 +57,27 @@ public class UserController {
     }
     @GetMapping("/verify")
     @ResponseBody
-	public ResponseEntity verify(@NotNull @RequestBody VerifyToken accessToken) throws IOException {
+	public ResponseEntity<?> verify(@NotNull @RequestBody VerifyToken accessToken) throws IOException {
         int statusCode = userService.verifyToken(accessToken.getAccessToken());
 
           return ResponseEntity.status(statusCode).body(null);
     }
 
     @PostMapping("/add-to-cart")
-    public void publishAddToCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
+    public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
         String accessToken=  objectNode.get("access_token").asText();
         int statusCode = userService.verifyToken(accessToken);
-        System.out.println(statusCode);
-        String productID = objectNode.get("productID").asText();
-        int quantity = objectNode.get("quantity").asInt();
-        userService.addCart(productID,quantity);
+        if (statusCode==200){
+            String productID = objectNode.get("productID").asText();
+            int quantity = objectNode.get("quantity").asInt();
+            return userService.addCart(productID,quantity);
 
+        }
+
+    else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        }
 
     }
 
