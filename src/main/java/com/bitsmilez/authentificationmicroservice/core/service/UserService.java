@@ -1,11 +1,10 @@
 package com.bitsmilez.authentificationmicroservice.core.service;
 
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
 import org.json.JSONObject;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
@@ -13,9 +12,10 @@ import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -32,7 +32,7 @@ public class UserService {
         this.kcProvider = keycloakProvider;
     }
 
-    public Response createKeycloakUser(CreateUserRequest user) {
+    public javax.ws.rs.core.Response createKeycloakUser(CreateUserRequest user) {
         UsersResource usersResource = kcProvider.getInstance().realm(realm).users();
         CredentialRepresentation credentialRepresentation = createPasswordCredentials(user.getPassword());
 
@@ -45,7 +45,7 @@ public class UserService {
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
 
-        Response response = usersResource.create(kcUser);
+        javax.ws.rs.core.Response response = usersResource.create(kcUser);
 
         if (response.getStatus() == 201) {
             // Used for future wishlist entries 
@@ -73,28 +73,30 @@ public class UserService {
         return kcProvider.introspectToken(accessToken);
     }
 
-    public void addCart(String productID, Integer amount) throws IOException {
+    public ResponseEntity<?> addCart(String productID, Integer amount) throws IOException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("productID", productID);
         jsonObject.accumulate("quantity",amount.toString());
         String json = jsonObject.toString();
-        StringEntity se = new StringEntity(json);
-
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"),json);
 
         String url = "http://localhost:8080/add-to-cart";
-        HttpClient httpClient = HttpClientBuilder.create().build();
-        HttpPost post = new HttpPost(url);
-        post.setHeader("Content-Type", "application/json");
+        OkHttpClient client = new OkHttpClient();
 
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .addHeader("Content-Type", "application/json")
+                .build();
 
-        post.setEntity(se);
-        HttpResponse response = httpClient.execute(post);
-        System.out.println(response.toString());
+        String response = client.newCall(request).execute().toString();
+        int codeIndex = response.indexOf("code="); // find the index of "code=" in the string
+        int commaIndex = response.indexOf(",", codeIndex); // find the index of the next comma after "code="
 
-
-
-
-
+        String codeStr = response.substring(codeIndex + 5, commaIndex); // extract the substring that represents the code number
+        int code = Integer.parseInt(codeStr); // convert the string to an integer
+        System.out.println(code);
+        return  new ResponseEntity<>(HttpStatus.valueOf(code));
 
     }
 
