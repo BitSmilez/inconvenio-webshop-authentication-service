@@ -1,4 +1,4 @@
-package com.bitsmilez.authentificationmicroservice.core.service;
+package com.bitsmilez.authentificationmicroservice.core.service.impl;
 
 
 import com.mashape.unirest.http.JsonNode;
@@ -87,8 +87,7 @@ import java.util.Base64;
 
         HttpResponse response = httpClient.execute(post);
         JSONObject jsonResponse = new JSONObject (EntityUtils.toString(response.getEntity()));
-        Integer statusCode = (Boolean.parseBoolean(String.valueOf(jsonResponse.get("active")))  ? 200  :401) ;
-        return statusCode;
+        return Boolean.parseBoolean(String.valueOf(jsonResponse.get("active")))  ? 200  :401;
     }
 
 }
