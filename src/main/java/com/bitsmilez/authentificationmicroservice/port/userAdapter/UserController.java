@@ -1,7 +1,9 @@
 package com.bitsmilez.authentificationmicroservice.port.userAdapter;
 
 
-import com.bitsmilez.authentificationmicroservice.core.service.UserService;
+import com.bitsmilez.authentificationmicroservice.core.service.impl.UserService;
+import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IGateway;
+import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IUserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
 import com.bitsmilez.authentificationmicroservice.port.requests.LoginRequest;
 import com.bitsmilez.authentificationmicroservice.port.requests.VerifyToken;
@@ -20,13 +22,15 @@ import java.io.IOException;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/user")
 public class UserController {
-    private final UserService userService;
+    private final IUserService userService;
+    private final IGateway gateway;
 
 
 
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, IGateway gateway) {
         this.userService = userService;
+        this.gateway = gateway;
     }
 	
 
@@ -70,7 +74,7 @@ public class UserController {
         if (statusCode==200){
             String productID = objectNode.get("productID").asText();
             int quantity = objectNode.get("quantity").asInt();
-            return userService.addCart(productID,quantity);
+            return gateway.publishAddToCartEvent(productID,quantity);
 
         }
 
