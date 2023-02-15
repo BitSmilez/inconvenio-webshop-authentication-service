@@ -1,19 +1,13 @@
-package com.bitsmilez.authentificationmicroservice.core.service;
+package com.bitsmilez.authentificationmicroservice.core.service.impl;
 
+import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IUserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import org.json.JSONObject;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -21,7 +15,7 @@ import java.util.Collections;
 
 
 @Service
-public class UserService {
+public class UserService implements IUserService {
     @Value("${keycloak.realm}")
     public String realm;
 
@@ -73,32 +67,7 @@ public class UserService {
         return kcProvider.introspectToken(accessToken);
     }
 
-    public ResponseEntity<?> addCart(String productID, Integer amount) throws IOException {
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("productID", productID);
-        jsonObject.accumulate("quantity",amount.toString());
-        String json = jsonObject.toString();
-        RequestBody body = RequestBody.create(MediaType.parse("application/json"),json);
 
-        String url = "http://localhost:8080/add-to-cart";
-        OkHttpClient client = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .build();
-
-        String response = client.newCall(request).execute().toString();
-        int codeIndex = response.indexOf("code="); // find the index of "code=" in the string
-        int commaIndex = response.indexOf(",", codeIndex); // find the index of the next comma after "code="
-
-        String codeStr = response.substring(codeIndex + 5, commaIndex); // extract the substring that represents the code number
-        int code = Integer.parseInt(codeStr); // convert the string to an integer
-        System.out.println(code);
-        return  new ResponseEntity<>(HttpStatus.valueOf(code));
-
-    }
 
 
     private static CredentialRepresentation createPasswordCredentials(String password) {
