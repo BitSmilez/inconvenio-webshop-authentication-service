@@ -71,6 +71,7 @@ public class UserController {
     public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
         String accessToken=  objectNode.get("access_token").asText();
         int statusCode = userService.verifyToken(accessToken);
+        System.out.println(statusCode);
         if (statusCode==200){
             String productID = objectNode.get("productID").asText();
             int quantity = objectNode.get("quantity").asInt();
@@ -86,12 +87,35 @@ public class UserController {
     }
 
     @PostMapping("/remove-from-cart")
-    public ResponseEntity<?> publishRemoveFromCartEvent(@RequestBody ObjectNode objectNode) {
-        return null;
+    public ResponseEntity<?> publishRemoveFromCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
+
+
+        String accessToken=  objectNode.get("access_token").asText();
+        int statusCode = userService.verifyToken(accessToken);
+        if (statusCode==200){
+            String productID = objectNode.get("productID").asText();
+            String cartID = objectNode.get("cartID").asText();
+            return gateway.publishRemoveFromCartEvent(productID,cartID);
+
+        }
+
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        }
     }
 
     @PostMapping("/update-cart")
-    public ResponseEntity<?> publishUpdateCartEvent(@RequestBody ObjectNode objectNode) {
+    public ResponseEntity<?> publishUpdateCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
+        String accessToken=  objectNode.get("access_token").asText();
+        int statusCode = userService.verifyToken(accessToken);
+        if (statusCode==200){
+            String productID = objectNode.get("productID").asText();
+            int quantity = objectNode.get("quantity").asInt();
+            String cartID = objectNode.get("cartID").asText();
+            return gateway.publishUpdateCartEvent(productID,quantity,cartID);
+        }
+
         return null;
 
     }
