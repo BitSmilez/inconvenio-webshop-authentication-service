@@ -6,7 +6,6 @@ import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IGatew
 import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IUserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
 import com.bitsmilez.authentificationmicroservice.port.requests.LoginRequest;
-import com.bitsmilez.authentificationmicroservice.port.requests.VerifyToken;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.keycloak.representations.AccessTokenResponse;
 import org.springframework.http.HttpHeaders;
@@ -59,13 +58,7 @@ public class UserController {
         }
 
     }
-    @GetMapping("/verify")
-    @ResponseBody
-	public ResponseEntity<?> verify(@NotNull @RequestBody VerifyToken accessToken) throws IOException {
-        int statusCode = userService.verifyToken(accessToken.getAccessToken());
 
-          return ResponseEntity.status(statusCode).body(null);
-    }
     @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/add-to-cart")
     public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
