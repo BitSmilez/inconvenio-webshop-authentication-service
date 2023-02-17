@@ -18,8 +18,8 @@ import javax.validation.constraints.NotNull;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 
-@RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RestController
 @RequestMapping("/user")
 public class UserController {
     private final IUserService userService;
@@ -66,7 +66,7 @@ public class UserController {
 
           return ResponseEntity.status(statusCode).body(null);
     }
-
+    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/add-to-cart")
     public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
         String accessToken=  objectNode.get("access_token").asText();
@@ -116,7 +116,10 @@ public class UserController {
             return gateway.publishUpdateCartEvent(productID,quantity,cartID);
         }
 
-        return null;
+        else{
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
+        }
 
     }
 
