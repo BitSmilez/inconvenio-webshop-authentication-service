@@ -59,12 +59,11 @@ public class UserController {
 
     }
 
-    @CrossOrigin(origins = "http://localhost:3000")
     @PostMapping("/add-to-cart")
-    public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
-        String accessToken=  objectNode.get("access_token").asText();
-        int statusCode = userService.verifyToken(accessToken);
-        System.out.println(statusCode);
+    public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode,@RequestHeader("Authorization") String bearerToken) throws IOException {
+        bearerToken = (bearerToken.replace("Bearer ",""));
+        int statusCode = userService.verifyToken(bearerToken);
+
         if (statusCode==200){
             String productID = objectNode.get("productID").asText();
             int quantity = objectNode.get("quantity").asInt();
@@ -80,11 +79,10 @@ public class UserController {
     }
 
     @PostMapping("/remove-from-cart")
-    public ResponseEntity<?> publishRemoveFromCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
+    public ResponseEntity<?> publishRemoveFromCartEvent(@RequestBody ObjectNode objectNode,@RequestHeader("Authorization") String bearerToken) throws IOException {
+        bearerToken = (bearerToken.replace("Bearer ",""));
+        int statusCode = userService.verifyToken(bearerToken);
 
-
-        String accessToken=  objectNode.get("access_token").asText();
-        int statusCode = userService.verifyToken(accessToken);
         if (statusCode==200){
             String productID = objectNode.get("productID").asText();
             String cartID = objectNode.get("cartID").asText();
@@ -99,9 +97,9 @@ public class UserController {
     }
 
     @PostMapping("/update-cart")
-    public ResponseEntity<?> publishUpdateCartEvent(@RequestBody ObjectNode objectNode) throws IOException {
-        String accessToken=  objectNode.get("access_token").asText();
-        int statusCode = userService.verifyToken(accessToken);
+    public ResponseEntity<?> publishUpdateCartEvent(@RequestBody ObjectNode objectNode,@RequestHeader("Authorization") String bearerToken) throws IOException {
+        bearerToken = (bearerToken.replace("Bearer ",""));
+        int statusCode = userService.verifyToken(bearerToken);
         if (statusCode==200){
             String productID = objectNode.get("productID").asText();
             int quantity = objectNode.get("quantity").asInt();
