@@ -1,30 +1,32 @@
-package com.bitsmilez.authentificationmicroservice.core.service;
+package com.bitsmilez.authentificationmicroservice.core.service.impl;
 
-import com.bitsmilez.authentificationmicroservice.config.KeycloakProvider;
+import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IUserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
+import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
+import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.representations.idm.CredentialRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.ws.rs.core.Response;
+import java.io.IOException;
 import java.util.Collections;
 
 
 @Service
-public class KeycloakAdminClientService {
+public class UserService implements IUserService {
     @Value("${keycloak.realm}")
     public String realm;
 
     private final KeycloakProvider kcProvider;
 
 
-    public KeycloakAdminClientService(KeycloakProvider keycloakProvider) {
+    public UserService(KeycloakProvider keycloakProvider) {
         this.kcProvider = keycloakProvider;
     }
 
-    public Response createKeycloakUser(CreateUserRequest user) {
+    public javax.ws.rs.core.Response createKeycloakUser(CreateUserRequest user) {
         UsersResource usersResource = kcProvider.getInstance().realm(realm).users();
         CredentialRepresentation credentialRepresentation = createPasswordCredentials(user.getPassword());
 
@@ -37,23 +39,36 @@ public class KeycloakAdminClientService {
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
 
-        Response response = usersResource.create(kcUser);
+        javax.ws.rs.core.Response response = usersResource.create(kcUser);
 
         if (response.getStatus() == 201) {
             // Used for future wishlist entries 
 //            User localUser = new User();
 //            localUser.setFirstName(kcUser.getFirstName());
 //            localUser.setLastName(kcUser.getLastName());
-//            localUser.setEmail(user.getEmail());
-//            localUser.setCreatedDate(Timestamp.from(Instant.now()));
-//            String userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
-//            usersResource.get(userId).sendVerifyEmail();
-//            userRepository.save(localUser);
         }
 
         return response;
 
     }
+    public AccessTokenResponse login(String username, String password){
+        Keycloak keycloak = kcProvider.newKeycloakBuilderWithPasswordCredentials(username, password).build();
+        try {
+            return  keycloak.tokenManager().getAccessToken();
+        }
+        catch (Exception e){
+            return null;
+
+        }
+    }
+
+
+    public Integer verifyToken(String accessToken) throws IOException {
+        return kcProvider.introspectToken(accessToken);
+    }
+
+
+
 
     private static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
@@ -62,6 +77,12 @@ public class KeycloakAdminClientService {
         passwordCredentials.setValue(password);
         return passwordCredentials;
     }
+
+
+
+
+
+
 
 
 }
