@@ -43,32 +43,28 @@ public class UserService implements IUserService {
 
         if (response.getStatus() == 201) {
             // Used for future wishlist entries 
-//            User localUser = new User();
-//            localUser.setFirstName(kcUser.getFirstName());
-//            localUser.setLastName(kcUser.getLastName());
+            // User localUser = new User();
+            // localUser.setFirstName(kcUser.getFirstName());
+            // localUser.setLastName(kcUser.getLastName());
         }
 
         return response;
 
     }
-    public AccessTokenResponse login(String username, String password){
+
+    public AccessTokenResponse login(String username, String password) {
         Keycloak keycloak = kcProvider.newKeycloakBuilderWithPasswordCredentials(username, password).build();
         try {
-            return  keycloak.tokenManager().getAccessToken();
-        }
-        catch (Exception e){
+            return keycloak.tokenManager().getAccessToken();
+        } catch (Exception e) {
             return null;
 
         }
     }
 
-
     public Integer verifyToken(String accessToken) throws IOException {
         return kcProvider.introspectToken(accessToken);
     }
-
-
-
 
     private static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
@@ -77,12 +73,4 @@ public class UserService implements IUserService {
         passwordCredentials.setValue(password);
         return passwordCredentials;
     }
-
-
-
-
-
-
-
-
 }
