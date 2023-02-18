@@ -25,13 +25,11 @@ public class UserController {
     private final IGateway gateway;
 
 
-
-
     public UserController(UserService userService, IGateway gateway) {
         this.userService = userService;
         this.gateway = gateway;
     }
-	
+
 
     @PostMapping(value = "/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest user) {
@@ -44,8 +42,7 @@ public class UserController {
     public ResponseEntity<AccessTokenResponse> login(@NotNull @RequestBody LoginRequest loginRequest) {
         AccessTokenResponse response = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
 
-        if(response != null) {
-
+        if (response != null) {
 
 
             HttpHeaders headers = new HttpHeaders();
@@ -53,25 +50,28 @@ public class UserController {
 
             return ResponseEntity.status(HttpStatus.OK).headers(headers).body(response);
 
-        } else   {
+        } else {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
         }
 
     }
 
     @PostMapping("/add-to-cart")
-    public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode,@RequestHeader("Authorization") String bearerToken) throws IOException {
-        bearerToken = (bearerToken.replace("Bearer ",""));
+    public ResponseEntity<?> publishAddToCartEvent(@RequestBody ObjectNode objectNode, @RequestHeader(name = "Authorization", required = false) String bearerToken) throws IOException {
+
+        if (bearerToken == null || bearerToken.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        bearerToken = (bearerToken.replace("Bearer ", ""));
         int statusCode = userService.verifyToken(bearerToken);
 
-        if (statusCode==200){
+        if (statusCode == 200) {
             String productID = objectNode.get("productID").asText();
             int quantity = objectNode.get("quantity").asInt();
-            return gateway.publishAddToCartEvent(productID,quantity);
+            String cartID = objectNode.get("cartID").asText();
+            return gateway.publishAddToCartEvent(productID, quantity, cartID);
 
-        }
-
-    else{
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         }
@@ -79,35 +79,31 @@ public class UserController {
     }
 
     @PostMapping("/remove-from-cart")
-    public ResponseEntity<?> publishRemoveFromCartEvent(@RequestBody ObjectNode objectNode,@RequestHeader("Authorization") String bearerToken) throws IOException {
-        bearerToken = (bearerToken.replace("Bearer ",""));
+    public ResponseEntity<?> publishRemoveFromCartEvent(@RequestBody ObjectNode objectNode, @RequestHeader("Authorization") String bearerToken) throws IOException {
+        bearerToken = (bearerToken.replace("Bearer ", ""));
         int statusCode = userService.verifyToken(bearerToken);
 
-        if (statusCode==200){
+        if (statusCode == 200) {
             String productID = objectNode.get("productID").asText();
             String cartID = objectNode.get("cartID").asText();
-            return gateway.publishRemoveFromCartEvent(productID,cartID);
+            return gateway.publishRemoveFromCartEvent(productID, cartID);
 
-        }
-
-        else{
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         }
     }
 
     @PostMapping("/update-cart")
-    public ResponseEntity<?> publishUpdateCartEvent(@RequestBody ObjectNode objectNode,@RequestHeader("Authorization") String bearerToken) throws IOException {
-        bearerToken = (bearerToken.replace("Bearer ",""));
+    public ResponseEntity<?> publishUpdateCartEvent(@RequestBody ObjectNode objectNode, @RequestHeader("Authorization") String bearerToken) throws IOException {
+        bearerToken = (bearerToken.replace("Bearer ", ""));
         int statusCode = userService.verifyToken(bearerToken);
-        if (statusCode==200){
+        if (statusCode == 200) {
             String productID = objectNode.get("productID").asText();
             int quantity = objectNode.get("quantity").asInt();
             String cartID = objectNode.get("cartID").asText();
-            return gateway.publishUpdateCartEvent(productID,quantity,cartID);
-        }
-
-        else{
+            return gateway.publishUpdateCartEvent(productID, quantity, cartID);
+        } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 
         }
