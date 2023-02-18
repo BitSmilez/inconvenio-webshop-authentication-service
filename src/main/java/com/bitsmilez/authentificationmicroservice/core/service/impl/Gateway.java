@@ -14,30 +14,17 @@ import java.io.IOException;
 @Service
 public class Gateway implements IGateway {
     @Override
-    public ResponseEntity<?> publishAddToCartEvent(String productID, Integer amount) throws IOException {
+    public ResponseEntity<?> publishAddToCartEvent(String productID, Integer amount, String cartID) throws IOException {
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("productID", productID);
         jsonObject.accumulate("quantity",amount.toString());
+        jsonObject.accumulate("cartID",cartID);
         String json = jsonObject.toString();
         RequestBody body = RequestBody.create(MediaType.parse("application/json"),json);
 
         String url = "http://localhost:8080/cart/add-to-cart";
-        OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .build();
-
-        String response = client.newCall(request).execute().toString();
-        int codeIndex = response.indexOf("code="); // find the index of "code=" in the string
-        int commaIndex = response.indexOf(",", codeIndex); // find the index of the next comma after "code="
-
-        String codeStr = response.substring(codeIndex + 5, commaIndex); // extract the substring that represents the code number
-        int code = Integer.parseInt(codeStr); // convert the string to an integer
-        return  new ResponseEntity<>(HttpStatus.valueOf(code));
-
+        return generateRequest(url, body);
     }
 
     @Override
@@ -49,21 +36,8 @@ public class Gateway implements IGateway {
         RequestBody body = RequestBody.create(MediaType.parse("application/json"),json);
 
         String url = "http://localhost:8080/cart/remove-from-cart";
-        OkHttpClient client = new OkHttpClient();
 
-        Request request = new Request.Builder()
-                .url(url)
-                .post(body)
-                .addHeader("Content-Type", "application/json")
-                .build();
-
-        String response = client.newCall(request).execute().toString();
-        int codeIndex = response.indexOf("code="); // find the index of "code=" in the string
-        int commaIndex = response.indexOf(",", codeIndex); // find the index of the next comma after "code="
-
-        String codeStr = response.substring(codeIndex + 5, commaIndex); // extract the substring that represents the code number
-        int code = Integer.parseInt(codeStr); // convert the string to an integer
-        return  new ResponseEntity<>(HttpStatus.valueOf(code));
+        return generateRequest(url, body);
     }
 
     @Override
@@ -76,23 +50,26 @@ public class Gateway implements IGateway {
         RequestBody body = RequestBody.create(MediaType.parse("application/json"),json);
 
         String url = "http://localhost:8080/cart/update-cart";
+
+        return generateRequest(url, body);
+    }
+
+    private ResponseEntity<?> generateRequest(String URL, RequestBody body) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(url)
+                .url(URL)
                 .post(body)
                 .addHeader("Content-Type", "application/json")
                 .build();
 
         String response = client.newCall(request).execute().toString();
-        int codeIndex = response.indexOf("code="); // find the index of "code=" in the string
-        int commaIndex = response.indexOf(",", codeIndex); // find the index of the next comma after "code="
+        int codeIndex = response.indexOf("code=");
+        int commaIndex = response.indexOf(",", codeIndex);
 
-        String codeStr = response.substring(codeIndex + 5, commaIndex); // extract the substring that represents the code number
-        int code = Integer.parseInt(codeStr); // convert the string to an integer
+        String codeStr = response.substring(codeIndex + 5, commaIndex);
+        int code = Integer.parseInt(codeStr);
+
         return  new ResponseEntity<>(HttpStatus.valueOf(code));
-
     }
-
-
 }
