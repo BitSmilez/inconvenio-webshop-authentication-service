@@ -1,4 +1,4 @@
-package com.bitsmilez.cartmicroservice;
+package com.bitsmilez;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
