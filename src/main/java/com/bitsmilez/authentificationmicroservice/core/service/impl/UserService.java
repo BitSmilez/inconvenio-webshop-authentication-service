@@ -39,16 +39,13 @@ public class UserService implements IUserService {
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
 
-        javax.ws.rs.core.Response response = usersResource.create(kcUser);
-
+        /*
         if (response.getStatus() == 201) {
-            // Used for future wishlist entries 
-            // User localUser = new User();
-            // localUser.setFirstName(kcUser.getFirstName());
-            // localUser.setLastName(kcUser.getLastName());
+            // Used for future wishlist entries
         }
+        */
 
-        return response;
+        return usersResource.create(kcUser);
 
     }
 
@@ -66,7 +63,7 @@ public class UserService implements IUserService {
         return kcProvider.introspectToken(accessToken);
     }
 
-    private static CredentialRepresentation createPasswordCredentials(String password) {
+    static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
         passwordCredentials.setTemporary(false);
         passwordCredentials.setType(CredentialRepresentation.PASSWORD);
