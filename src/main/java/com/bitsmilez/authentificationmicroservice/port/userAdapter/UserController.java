@@ -1,7 +1,5 @@
 package com.bitsmilez.authentificationmicroservice.port.userAdapter;
 
-
-import com.bitsmilez.authentificationmicroservice.core.service.impl.UserService;
 import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IGateway;
 import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IUserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
@@ -25,7 +23,7 @@ public class UserController {
     private final IGateway gateway;
 
 
-    public UserController(UserService userService, IGateway gateway) {
+    public UserController(IUserService userService, IGateway gateway) {
         this.userService = userService;
         this.gateway = gateway;
     }
