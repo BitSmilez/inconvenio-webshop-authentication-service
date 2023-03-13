@@ -7,7 +7,7 @@ import java.io.IOException;
 
 public interface IUserService {
 
-    javax.ws.rs.core.Response createKeycloakUser(CreateUserRequest user);
+    Integer createKeycloakUser(CreateUserRequest user);
     AccessTokenResponse login(String username, String password);
 
     Integer verifyToken(String accessToken) throws IOException;
