@@ -1,9 +1,6 @@
 package com.bitsmilez.authentificationmicroservice.core.service.impl;
 
 
-import com.mashape.unirest.http.JsonNode;
-import com.mashape.unirest.http.Unirest;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import com.squareup.okhttp.OkHttpClient;
 import lombok.Getter;
 import org.apache.http.HttpResponse;
@@ -62,16 +59,6 @@ import java.util.Base64;
                 .password(password);
     }
 
-    public JsonNode refreshToken(String refreshToken) throws UnirestException {
-        String url = serverURL + "/realms/" + realm + "/protocol/openid-connect/token";
-        return Unirest.post(url)
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .field("client_id", clientID)
-                .field("client_secret", clientSecret)
-                .field("refresh_token", refreshToken)
-                .field("grant_type", "refresh_token")
-                .asJson().getBody();
-    }
     public  Integer introspectToken(String accessToken) throws IOException {
         String url = serverURL+"realms/"+realm+"/protocol/openid-connect/token/introspect";
 
