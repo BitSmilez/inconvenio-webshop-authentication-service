@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -31,8 +30,8 @@ public class UserController {
 
     @PostMapping(value = "/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest user) {
-        Response createdResponse = userService.createKeycloakUser(user);
-        return ResponseEntity.status(createdResponse.getStatus()).build();
+        Integer createdResponse = userService.createKeycloakUser(user);
+        return ResponseEntity.status(createdResponse).build();
 
     }
 
