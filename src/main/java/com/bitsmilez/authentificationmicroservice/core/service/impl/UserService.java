@@ -10,6 +10,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -26,7 +27,7 @@ public class UserService implements IUserService {
         this.kcProvider = keycloakProvider;
     }
 
-    public javax.ws.rs.core.Response createKeycloakUser(CreateUserRequest user) {
+    public Integer createKeycloakUser(CreateUserRequest user) {
         UsersResource usersResource = kcProvider.getInstance().realm(realm).users();
         CredentialRepresentation credentialRepresentation = createPasswordCredentials(user.getPassword());
 
@@ -45,7 +46,9 @@ public class UserService implements IUserService {
         }
         */
 
-        return usersResource.create(kcUser);
+        Response res =   usersResource.create(kcUser);
+
+        return res.getStatus();
 
     }
 
