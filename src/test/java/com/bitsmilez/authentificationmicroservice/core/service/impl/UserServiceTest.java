@@ -63,8 +63,8 @@ class UserServiceTest {
         when(response.getStatus()).thenReturn(201);
         CreateUserRequest createUserRequest = createUserRequest();
 
-        Response result = userService.createKeycloakUser(createUserRequest);
-        assertEquals("Response Code should be 201", 201, result.getStatus());
+        Integer result = userService.createKeycloakUser(createUserRequest);
+        assertEquals("Response Code should be 201", 201, result);
     }
 
     @Test
@@ -93,8 +93,8 @@ class UserServiceTest {
         when(response.getStatus()).thenReturn(400);
         CreateUserRequest createUserRequest = createInvalidUserRequest();
 
-        Response result = userService.createKeycloakUser(createUserRequest);
-        assertEquals("Response Code should be 400", 400, result.getStatus());
+        Integer result = userService.createKeycloakUser(createUserRequest);
+        assertEquals("Response Code should be 400", 400, result);
     }
 
     @Test
