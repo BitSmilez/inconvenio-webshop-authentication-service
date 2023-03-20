@@ -1,7 +1,5 @@
 package com.bitsmilez.authentificationmicroservice.port.userAdapter;
 
-
-import com.bitsmilez.authentificationmicroservice.core.service.impl.UserService;
 import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IGateway;
 import com.bitsmilez.authentificationmicroservice.core.service.interfaces.IUserService;
 import com.bitsmilez.authentificationmicroservice.port.requests.CreateUserRequest;
@@ -14,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -25,7 +22,7 @@ public class UserController {
     private final IGateway gateway;
 
 
-    public UserController(UserService userService, IGateway gateway) {
+    public UserController(IUserService userService, IGateway gateway) {
         this.userService = userService;
         this.gateway = gateway;
     }
@@ -33,8 +30,8 @@ public class UserController {
 
     @PostMapping(value = "/create")
     public ResponseEntity<?> createUser(@RequestBody CreateUserRequest user) {
-        Response createdResponse = userService.createKeycloakUser(user);
-        return ResponseEntity.status(createdResponse.getStatus()).build();
+        Integer createdResponse = userService.createKeycloakUser(user);
+        return ResponseEntity.status(createdResponse).build();
 
     }
 

@@ -10,6 +10,7 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Collections;
 
@@ -26,7 +27,7 @@ public class UserService implements IUserService {
         this.kcProvider = keycloakProvider;
     }
 
-    public javax.ws.rs.core.Response createKeycloakUser(CreateUserRequest user) {
+    public Integer createKeycloakUser(CreateUserRequest user) {
         UsersResource usersResource = kcProvider.getInstance().realm(realm).users();
         CredentialRepresentation credentialRepresentation = createPasswordCredentials(user.getPassword());
 
@@ -39,16 +40,15 @@ public class UserService implements IUserService {
         kcUser.setEnabled(true);
         kcUser.setEmailVerified(false);
 
-        javax.ws.rs.core.Response response = usersResource.create(kcUser);
-
+        /*
         if (response.getStatus() == 201) {
-            // Used for future wishlist entries 
-            // User localUser = new User();
-            // localUser.setFirstName(kcUser.getFirstName());
-            // localUser.setLastName(kcUser.getLastName());
+            // Used for future wishlist entries
         }
+        */
 
-        return response;
+        Response res =   usersResource.create(kcUser);
+
+        return res.getStatus();
 
     }
 
@@ -66,7 +66,7 @@ public class UserService implements IUserService {
         return kcProvider.introspectToken(accessToken);
     }
 
-    private static CredentialRepresentation createPasswordCredentials(String password) {
+    static CredentialRepresentation createPasswordCredentials(String password) {
         CredentialRepresentation passwordCredentials = new CredentialRepresentation();
         passwordCredentials.setTemporary(false);
         passwordCredentials.setType(CredentialRepresentation.PASSWORD);

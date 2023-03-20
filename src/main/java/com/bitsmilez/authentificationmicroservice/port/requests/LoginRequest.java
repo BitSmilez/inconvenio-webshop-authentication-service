@@ -1,8 +1,10 @@
 package com.bitsmilez.authentificationmicroservice.port.requests;
 
-import lombok.Getter;
+import lombok.*;
 
-@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequest {
 
     String username;
