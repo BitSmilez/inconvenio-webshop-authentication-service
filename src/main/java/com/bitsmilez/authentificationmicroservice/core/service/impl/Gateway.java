@@ -23,7 +23,7 @@ public class Gateway implements IGateway {
         String json = jsonObject.toString();
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
 
-        String url = "http://localhost:8080/cart/add-to-cart";
+        String url = "http://localhost:8085/cart/add-to-cart";
 
         return generateRequest(url, body);
     }
@@ -36,7 +36,7 @@ public class Gateway implements IGateway {
         String json = jsonObject.toString();
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
 
-        String url = "http://localhost:8080/cart/remove-from-cart";
+        String url = "http://localhost:8085/cart/remove-from-cart";
 
         return generateRequest(url, body);
     }
@@ -50,7 +50,7 @@ public class Gateway implements IGateway {
         String json = jsonObject.toString();
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
 
-        String url = "http://localhost:8080/cart/update-cart";
+        String url = "http://localhost:8085/cart/update-cart";
 
         return generateRequest(url, body);
     }
