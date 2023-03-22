@@ -12,18 +12,20 @@ services:
       - "8089:8089"
     environment:
       - KEYCLOAK_REALM=inconvenio
-      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/auth
+      - KEYCLOAK_AUTH_SERVER_URL=http://keycloak:8080/auth/
       - KEYCLOAK_SSL_REQUIRED=external
       - KEYCLOAK_RESOURCE=spring-boot-client
       - KEYCLOAK_CREDENTIALS_SECRET=2511b6af-1bd5-4dc1-bd20-f3d689c2d625
       - KEYCLOAK_USE_RESOURCE_ROLE_MAPPINGS=true
       - KEYCLOAK_BEARER_ONLY=true
       - SERVER_PORT=8089
+      - PRODUCT_SERVER_URL=http://app:8085
     depends_on:
       - keycloak
       - keycloak_db
     networks:
       - backend
+    restart: unless-stopped
   keycloak:
     container_name: keycloak
     image: jboss/keycloak:15.0.2
