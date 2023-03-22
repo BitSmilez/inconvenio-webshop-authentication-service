@@ -6,6 +6,7 @@ import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.RequestBody;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,8 @@ import java.io.IOException;
 
 @Service
 public class Gateway implements IGateway {
+    @Value("${product.server-url}")
+    private String productURL;
     @Override
     public ResponseEntity<?> publishAddToCartEvent(String productID, Integer amount, String cartID) throws IOException {
         JSONObject jsonObject = new JSONObject();
@@ -23,7 +26,7 @@ public class Gateway implements IGateway {
         String json = jsonObject.toString();
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
 
-        String url = "http://localhost:8085/cart/add-to-cart";
+        String url = productURL+"/cart/add-to-cart";
 
         return generateRequest(url, body);
     }
@@ -36,7 +39,7 @@ public class Gateway implements IGateway {
         String json = jsonObject.toString();
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
 
-        String url = "http://localhost:8085/cart/remove-from-cart";
+        String url = productURL+"/cart/remove-from-cart";
 
         return generateRequest(url, body);
     }
@@ -50,7 +53,7 @@ public class Gateway implements IGateway {
         String json = jsonObject.toString();
         RequestBody body = RequestBody.create(MediaType.parse("application/json"), json);
 
-        String url = "http://localhost:8085/cart/update-cart";
+        String url = productURL+"/cart/update-cart";
 
         return generateRequest(url, body);
     }
